@@ -33,8 +33,9 @@
       clientReady = true
       notifyReady()
     } catch (err: any) {
-      error = err?.message ?? 'Failed to initialize embed'
-      notifyError(error)
+      const msg = err?.message ?? 'Failed to initialize embed'
+      error = msg
+      notifyError(msg)
     }
   })
 </script>
