@@ -7,8 +7,8 @@
   "scripts": {
     "build": "compile ui",
     "build:docs": "api-extractor run --local",
-    "svelte-check": "do-svelte-check --threshold error",
-    "_phase:svelte-check": "do-svelte-check --threshold error",
+    "svelte-check": "svelte-check --output human --fail-on-warnings false --fail-on-hints false",
+    "_phase:svelte-check": "svelte-check --output human --fail-on-warnings false --fail-on-hints false",
     "format": "format src",
     "build:watch": "compile ui",
     "_phase:build": "compile ui",
