@@ -14,7 +14,6 @@
 //
 
 import { mergeIds } from '@hcengineering/platform'
-import { embedId } from '@hcengineering/embed'
-import embed from '@hcengineering/embed-resources/src/plugin'
+import embed, { embedId } from '@hcengineering/embed'
 
 export default mergeIds(embedId, embed, {})
