@@ -2735,6 +2735,36 @@
       "packageName": "@hcengineering/pod-rating",
       "projectFolder": "services/rating",
       "shouldPublish": false
+    },
+    {
+      "packageName": "@hcengineering/embed",
+      "projectFolder": "plugins/embed",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@hcengineering/embed-assets",
+      "projectFolder": "plugins/embed-assets",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@hcengineering/embed-resources",
+      "projectFolder": "plugins/embed-resources",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@hcengineering/model-embed",
+      "projectFolder": "models/embed",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@hcengineering/server-embed",
+      "projectFolder": "server-plugins/embed",
+      "shouldPublish": false
+    },
+    {
+      "packageName": "@hcengineering/server-embed-resources",
+      "projectFolder": "server-plugins/embed-resources",
+      "shouldPublish": false
     }
   ]
 }

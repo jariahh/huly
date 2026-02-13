@@ -1,0 +1,109 @@
+name: Build Embed Images
+
+on:
+  push:
+    branches: [develop]
+    tags: ['v*']
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  OWNER: ${{ github.repository_owner }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          filter: tree:0
+          submodules: recursive
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Cache node modules
+        uses: actions/cache@v5
+        with:
+          path: common/temp
+          key: ${{ runner.os }}-node-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: node common/scripts/install-run-rush.js install
+
+      - name: Model version from git tags
+        run: node common/scripts/install-run-rush.js model-version
+
+      - name: Build all packages
+        run: node common/scripts/install-run-rush.js build
+
+      # --- Front pod (UI with embed plugin) ---
+      - name: Package frontend (webpack production build)
+        run: |
+          cd dev/prod
+          node ../../common/scripts/install-run-rushx.js package
+
+      - name: Bundle front pod
+        run: |
+          cd pods/front
+          node ../../common/scripts/install-run-rushx.js bundle
+
+      - name: Package front pod
+        run: |
+          cd pods/front
+          node ../../common/scripts/install-run-rushx.js package
+
+      # --- Server pod (transactor — bundles model.json with embed schema) ---
+      - name: Bundle server pod
+        run: |
+          cd pods/server
+          node ../../common/scripts/install-run-rushx.js bundle
+
+      # --- Workspace pod (workspace init — needs embed model for new workspaces) ---
+      - name: Bundle workspace pod
+        run: |
+          cd pods/workspace
+          node ../../common/scripts/install-run-rushx.js bundle
+
+      # --- Docker ---
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push front image
+        run: |
+          cd pods/front
+          docker build \
+            -t ${{ env.REGISTRY }}/${{ env.OWNER }}/huly-front:${{ github.sha }} \
+            -t ${{ env.REGISTRY }}/${{ env.OWNER }}/huly-front:latest \
+            .
+          docker push ${{ env.REGISTRY }}/${{ env.OWNER }}/huly-front --all-tags
+
+      - name: Build and push transactor image
+        run: |
+          cd pods/server
+          docker build \
+            -t ${{ env.REGISTRY }}/${{ env.OWNER }}/huly-transactor:${{ github.sha }} \
+            -t ${{ env.REGISTRY }}/${{ env.OWNER }}/huly-transactor:latest \
+            .
+          docker push ${{ env.REGISTRY }}/${{ env.OWNER }}/huly-transactor --all-tags
+
+      - name: Build and push workspace image
+        run: |
+          cd pods/workspace
+          docker build \
+            -t ${{ env.REGISTRY }}/${{ env.OWNER }}/huly-workspace:${{ github.sha }} \
+            -t ${{ env.REGISTRY }}/${{ env.OWNER }}/huly-workspace:latest \
+            .
+          docker push ${{ env.REGISTRY }}/${{ env.OWNER }}/huly-workspace --all-tags

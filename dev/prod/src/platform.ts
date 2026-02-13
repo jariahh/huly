@@ -82,6 +82,7 @@ import billingPlugin, { billingId } from '@hcengineering/billing'
 import { hulyMailId } from '@hcengineering/huly-mail'
 import { aiAssistantId } from '@hcengineering/ai-assistant'
 import { ratingId } from '@hcengineering/rating'
+import embed, { embedId } from '@hcengineering/embed'
 
 import '@hcengineering/activity-assets'
 import '@hcengineering/analytics-collector-assets'
@@ -142,6 +143,7 @@ import '@hcengineering/billing-assets'
 import '@hcengineering/huly-mail-assets'
 import '@hcengineering/ai-assistant-assets'
 import '@hcengineering/rating-assets'
+import '@hcengineering/embed-assets'
 
 import { coreId } from '@hcengineering/core'
 import presentation, { loadServerConfig, createFileStorage, presentationId } from '@hcengineering/presentation'
@@ -412,6 +414,7 @@ function configureI18n(): void {
     async (lang: string) => await import(`@hcengineering/ai-assistant-assets/lang/${lang}.json`)
   )
   addStringsLoader(ratingId, async (lang: string) => await import(`@hcengineering/rating-assets/lang/${lang}.json`))
+  addStringsLoader(embedId, async (lang: string) => await import(`@hcengineering/embed-assets/lang/${lang}.json`))
 }
 
 export async function configurePlatform() {
@@ -556,7 +559,8 @@ export async function configurePlatform() {
       [githubId, github.component.ConnectApp],
       [calendarId, calendar.component.ConnectApp],
       [guestId, guest.component.GuestApp],
-      [globalProfileRoute, globalProfile.component.GlobalProfileApp]
+      [globalProfileRoute, globalProfile.component.GlobalProfileApp],
+      [embedId, embed.component.EmbedApp]
     ])
   )
 
@@ -713,6 +717,7 @@ export async function configurePlatform() {
   )
   addLocation(inboxId, async () => await import(/* webpackChunkName: "inbox" */ '@hcengineering/inbox-resources'))
   addLocation(ratingId, async () => await import(/* webpackChunkName: "rating" */ '@hcengineering/rating-resources'))
+  addLocation(embedId, async () => await import(/* webpackChunkName: "embed" */ '@hcengineering/embed-resources'))
 
   setMetadata(client.metadata.FilterModel, 'ui')
   setMetadata(client.metadata.ExtraFilter, disabledFeatures)
