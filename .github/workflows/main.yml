@@ -721,16 +721,25 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Tag and push embed images to GHCR
+      - name: Build and push embed images to GHCR
         if: ${{ github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/tags/v') }}
         env:
           REGISTRY: ghcr.io/${{ github.repository_owner }}
         run: |
           SHA=$(git rev-parse HEAD)
+          # Build single-platform (amd64) images from already-bundled artifacts
+          # and push directly to GHCR. The bundle.js files already have the
+          # correct MODEL_VERSION baked in from the rush bundle phase.
+          # We can't use 'docker tag' because the multi-platform buildx build
+          # above doesn't load images into the local Docker store.
+          declare -A POD_DIR=( [front]=pods/front [transactor]=pods/server [workspace]=pods/workspace )
           for img in front transactor workspace; do
-            docker tag "hardcoreeng/${img}" "${REGISTRY}/huly-${img}:${SHA}"
-            docker tag "hardcoreeng/${img}" "${REGISTRY}/huly-${img}:latest"
-            docker push "${REGISTRY}/huly-${img}" --all-tags
+            docker build \
+              -t "${REGISTRY}/huly-${img}:${SHA}" \
+              -t "${REGISTRY}/huly-${img}:latest" \
+              "${POD_DIR[$img]}"
+            docker push "${REGISTRY}/huly-${img}:${SHA}"
+            docker push "${REGISTRY}/huly-${img}:latest"
           done
 
   dist-build:
