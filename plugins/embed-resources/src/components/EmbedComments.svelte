@@ -7,7 +7,6 @@
 -->
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
-  import { type Doc } from '@hcengineering/core'
   import { type EmbedConfig } from '@hcengineering/embed'
   import tracker, { type Issue } from '@hcengineering/tracker'
   import { createQuery } from '@hcengineering/presentation'
