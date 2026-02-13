@@ -15,15 +15,5 @@
 
 import { mergeIds } from '@hcengineering/platform'
 import embed, { embedId } from '@hcengineering/embed'
-import { type AnyComponent } from '@hcengineering/ui'
 
-export default mergeIds(embedId, embed, {
-  component: {
-    EmbedApp: '' as AnyComponent,
-    EmbedCreateIssue: '' as AnyComponent,
-    EmbedIssueList: '' as AnyComponent,
-    EmbedIssueDetail: '' as AnyComponent,
-    EmbedKanban: '' as AnyComponent,
-    EmbedComments: '' as AnyComponent
-  }
-})
+export default mergeIds(embedId, embed, {})
