@@ -7,8 +7,8 @@
   "scripts": {
     "build": "compile ui",
     "build:docs": "api-extractor run --local",
-    "svelte-check": "svelte-check --output human --fail-on-warnings false",
-    "_phase:svelte-check": "svelte-check --output human --fail-on-warnings false",
+    "svelte-check": "do-svelte-check",
+    "_phase:svelte-check": "do-svelte-check",
     "format": "format src",
     "build:watch": "compile ui",
     "_phase:build": "compile ui",
@@ -48,6 +48,7 @@
     "@hcengineering/platform": "workspace:^0.7.19",
     "@hcengineering/presentation": "workspace:^0.7.0",
     "@hcengineering/tracker": "workspace:^0.7.0",
+    "@hcengineering/tracker-resources": "workspace:^0.7.0",
     "@hcengineering/ui": "workspace:^0.7.0",
     "@hcengineering/view": "workspace:^0.7.0",
     "svelte": "^4.2.20"

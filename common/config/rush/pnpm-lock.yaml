@@ -20584,6 +20584,9 @@ importers:
       '@hcengineering/tracker':
         specifier: workspace:^0.7.0
         version: link:../tracker
+      '@hcengineering/tracker-resources':
+        specifier: workspace:^0.7.0
+        version: link:../tracker-resources
       '@hcengineering/ui':
         specifier: workspace:^0.7.0
         version: link:../../packages/ui

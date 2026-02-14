@@ -8,7 +8,8 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
   import { type EmbedConfig } from '@hcengineering/embed'
-  import tracker, { type Project } from '@hcengineering/tracker'
+  import { type Project } from '@hcengineering/tracker'
+  import tracker from '@hcengineering/tracker-resources/src/plugin'
   import { createQuery } from '@hcengineering/presentation'
   import { Component } from '@hcengineering/ui'
   import { createResizeNotifier } from '../utils'
