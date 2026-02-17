@@ -13,8 +13,7 @@
 // limitations under the License.
 //
 
-import { EmbedEvents, type EmbedConfig, type EmbedComponentType, type EmbedHideableField } from '@hcengineering/embed'
-import { location } from '@hcengineering/ui'
+import { EmbedEvents, ALL_HIDEABLE_FIELDS, type EmbedConfig, type EmbedComponentType, type EmbedHideableField } from '@hcengineering/embed'
 
 /**
  * Target origin for postMessage calls to the parent window.
@@ -71,10 +70,13 @@ export function parseEmbedConfig (search: string): EmbedConfig | undefined {
   }
 
   // Parse hideFields as comma-separated list, e.g. "status,priority,duedate"
+  // Special value "*" expands to all hideable fields
   const hideFieldsParam = params.get('hideFields')
-  const hideFields = hideFieldsParam != null && hideFieldsParam !== ''
-    ? hideFieldsParam.split(',').map((f) => f.trim()) as EmbedHideableField[]
-    : undefined
+  let hideFields: EmbedHideableField[] | undefined
+  if (hideFieldsParam != null && hideFieldsParam !== '') {
+    const raw = hideFieldsParam.split(',').map((f) => f.trim())
+    hideFields = raw.includes('*') ? [...ALL_HIDEABLE_FIELDS] : raw as EmbedHideableField[]
+  }
 
   return {
     component,
@@ -128,37 +130,37 @@ export function notifyIssueClosed (identifier?: string): void {
 }
 
 /**
- * Create a navigation interceptor that watches the location store for fragment changes.
+ * Create a click interceptor that catches clicks on issue links before they navigate.
  *
- * In embed context, Workbench.svelte is not running, so clicking an issue in a list/kanban
- * updates location.fragment but no panel renders. This interceptor detects the fragment change,
- * parses the issue identifier from it, fires huly-embed-issue-selected, and undoes the navigation.
+ * In the embed context, clicking an issue in IssuesView/KanbanView causes a full page
+ * navigation (e.g. from /embed?component=issue-list&... to /embed//tracker/SUPPO-2)
+ * rather than a fragment change. This interceptor catches those clicks on the capture phase,
+ * extracts the issue identifier from the href, fires huly-embed-issue-selected, and
+ * prevents the default navigation.
  *
- * Fragment format: `component|identifier|_class|element` (pipe-delimited, URI-encoded)
- * Example: `tracker:EditIssue|SUPPORT-42|tracker:class:Issue|content`
- *
- * @returns An unsubscribe function to call in onDestroy.
+ * @param container The DOM element to listen on (captures clicks from all descendants).
+ * @returns A cleanup function to call in onDestroy.
  */
-export function createNavigationInterceptor (): () => void {
-  let previousFragment: string | undefined
+export function createClickInterceptor (container: HTMLElement): () => void {
+  function handleClick (event: MouseEvent): void {
+    const target = event.target as HTMLElement
+    const anchor = target.closest('a[href]') as HTMLAnchorElement | null
+    if (anchor == null) return
 
-  const unsubscribe = location.subscribe((loc) => {
-    const fragment = loc.fragment
-    if (fragment != null && fragment.length > 0 && fragment !== previousFragment) {
-      try {
-        const parts = decodeURIComponent(fragment).split('|')
-        // parts = ['tracker:EditIssue', 'SUPPORT-42', 'tracker:class:Issue', 'content']
-        if (parts.length >= 3 && parts[2].includes('Issue')) {
-          notifyIssueSelected(parts[1])
-        }
-      } catch {
-        // Ignore malformed fragments
-      }
-      // Undo the navigation — no panel to show in embed context
-      history.back()
+    const href = anchor.getAttribute('href')
+    if (href == null) return
+
+    // Match issue identifier in URL path — pattern: UPPERCASE-DIGITS
+    // e.g. /tracker/SUPPO-2, /tracker/PROJECT-ID/issues/SUPPORT-42
+    const match = href.match(/\/([A-Z][A-Z0-9]*-\d+)(?:\/|$|\?)/)
+    if (match != null) {
+      event.preventDefault()
+      event.stopPropagation()
+      notifyIssueSelected(match[1])
     }
-    previousFragment = fragment
-  })
+  }
 
-  return unsubscribe
+  // Use capture phase to intercept before the link navigates
+  container.addEventListener('click', handleClick, true)
+  return () => { container.removeEventListener('click', handleClick, true) }
 }

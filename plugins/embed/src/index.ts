@@ -34,17 +34,27 @@ export type EmbedComponentType =
  */
 /**
  * Field names that can be hidden in the create-issue form.
- * These correspond to the `id` attributes on the toolbar field wrappers in CreateIssue.svelte.
  * @public
  */
 export type EmbedHideableField =
   | 'status'
   | 'priority'
   | 'assignee'
+  | 'labels'
+  | 'component'
   | 'estimation'
   | 'milestone'
   | 'duedate'
   | 'parent'
+
+/**
+ * All hideable field names. Used to expand the '*' wildcard.
+ * @public
+ */
+export const ALL_HIDEABLE_FIELDS: EmbedHideableField[] = [
+  'status', 'priority', 'assignee', 'labels', 'component',
+  'estimation', 'milestone', 'duedate', 'parent'
+]
 
 export interface EmbedConfig {
   component: EmbedComponentType

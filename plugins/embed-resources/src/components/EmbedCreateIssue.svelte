@@ -19,6 +19,8 @@
   $: hideStatus = config.hideFields?.includes('status') ?? false
   $: hidePriority = config.hideFields?.includes('priority') ?? false
   $: hideAssignee = config.hideFields?.includes('assignee') ?? false
+  $: hideLabels = config.hideFields?.includes('labels') ?? false
+  $: hideComponent = config.hideFields?.includes('component') ?? false
   $: hideEstimation = config.hideFields?.includes('estimation') ?? false
   $: hideMilestone = config.hideFields?.includes('milestone') ?? false
   $: hideDuedate = config.hideFields?.includes('duedate') ?? false
@@ -94,6 +96,8 @@
   class:hide-status={hideStatus}
   class:hide-priority={hidePriority}
   class:hide-assignee={hideAssignee}
+  class:hide-labels={hideLabels}
+  class:hide-component={hideComponent}
   class:hide-estimation={hideEstimation}
   class:hide-milestone={hideMilestone}
   class:hide-duedate={hideDuedate}
@@ -124,10 +128,14 @@
     width: 100%;
     padding: 1rem;
 
-    // Field visibility: hide toolbar items via their id attributes in CreateIssue.svelte
+    // Field visibility: hide toolbar items in CreateIssue.svelte's pool slot.
+    // Most fields have id-bearing wrapper divs; labels and component are bare components
+    // at positions 4 and 5 within .antiCard-pool (after status, priority, assignee divs).
     &.hide-status :global(#status-editor) { display: none; }
     &.hide-priority :global(#priority-editor) { display: none; }
     &.hide-assignee :global(#assignee-editor) { display: none; }
+    &.hide-labels :global(.antiCard-pool > :nth-child(4)) { display: none; }
+    &.hide-component :global(.antiCard-pool > :nth-child(5)) { display: none; }
     &.hide-estimation :global(#estimation-editor) { display: none; }
     &.hide-milestone :global(#milestone-editor) { display: none; }
     &.hide-duedate :global(#duedate-editor) { display: none; }
