@@ -20593,6 +20593,9 @@ importers:
       '@hcengineering/view':
         specifier: workspace:^0.7.0
         version: link:../view
+      '@hcengineering/view-resources':
+        specifier: workspace:^0.7.0
+        version: link:../view-resources
       svelte:
         specifier: ^4.2.20
         version: 4.2.20
