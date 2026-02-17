@@ -32,12 +32,27 @@ export type EmbedComponentType =
  * Configuration passed to embedded components via URL params.
  * @public
  */
+/**
+ * Field names that can be hidden in the create-issue form.
+ * These correspond to the `id` attributes on the toolbar field wrappers in CreateIssue.svelte.
+ * @public
+ */
+export type EmbedHideableField =
+  | 'status'
+  | 'priority'
+  | 'assignee'
+  | 'estimation'
+  | 'milestone'
+  | 'duedate'
+  | 'parent'
+
 export interface EmbedConfig {
   component: EmbedComponentType
   token: string
   project?: string
   issue?: string
   externalUser?: string
+  hideFields?: EmbedHideableField[]
 }
 
 /**
@@ -73,6 +88,7 @@ export const EmbedEvents = {
   Ready: 'huly-embed-ready',
   IssueCreated: 'huly-embed-issue-created',
   IssueSelected: 'huly-embed-issue-selected',
+  IssueClosed: 'huly-embed-issue-closed',
   Resize: 'huly-embed-resize',
   Error: 'huly-embed-error'
 } as const

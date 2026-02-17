@@ -13,7 +13,8 @@
 // limitations under the License.
 //
 
-import { EmbedEvents, type EmbedConfig, type EmbedComponentType } from '@hcengineering/embed'
+import { EmbedEvents, type EmbedConfig, type EmbedComponentType, type EmbedHideableField } from '@hcengineering/embed'
+import { location } from '@hcengineering/ui'
 
 /**
  * Target origin for postMessage calls to the parent window.
@@ -69,12 +70,19 @@ export function parseEmbedConfig (search: string): EmbedConfig | undefined {
     _targetOrigin = parentOrigin
   }
 
+  // Parse hideFields as comma-separated list, e.g. "status,priority,duedate"
+  const hideFieldsParam = params.get('hideFields')
+  const hideFields = hideFieldsParam != null && hideFieldsParam !== ''
+    ? hideFieldsParam.split(',').map((f) => f.trim()) as EmbedHideableField[]
+    : undefined
+
   return {
     component,
     token,
     project: params.get('project') ?? undefined,
     issue: params.get('issue') ?? undefined,
-    externalUser: params.get('externalUser') ?? undefined
+    externalUser: params.get('externalUser') ?? undefined,
+    hideFields
   }
 }
 
@@ -89,4 +97,68 @@ export function createResizeNotifier (element: HTMLElement): ResizeObserver {
   })
   observer.observe(element)
   return observer
+}
+
+/**
+ * Notify the parent that a new issue was created.
+ */
+export function notifyIssueCreated (issueId: string, identifier: string): void {
+  postToParent(EmbedEvents.IssueCreated, { issueId, identifier })
+}
+
+/**
+ * Notify the parent that issue creation was cancelled.
+ */
+export function notifyIssueCreateCancelled (): void {
+  postToParent(EmbedEvents.IssueCreated, { cancelled: true })
+}
+
+/**
+ * Notify the parent that an issue was selected (clicked) in a list/kanban/detail view.
+ */
+export function notifyIssueSelected (identifier: string): void {
+  postToParent(EmbedEvents.IssueSelected, { identifier })
+}
+
+/**
+ * Notify the parent that an issue detail view was closed.
+ */
+export function notifyIssueClosed (identifier?: string): void {
+  postToParent(EmbedEvents.IssueClosed, { identifier })
+}
+
+/**
+ * Create a navigation interceptor that watches the location store for fragment changes.
+ *
+ * In embed context, Workbench.svelte is not running, so clicking an issue in a list/kanban
+ * updates location.fragment but no panel renders. This interceptor detects the fragment change,
+ * parses the issue identifier from it, fires huly-embed-issue-selected, and undoes the navigation.
+ *
+ * Fragment format: `component|identifier|_class|element` (pipe-delimited, URI-encoded)
+ * Example: `tracker:EditIssue|SUPPORT-42|tracker:class:Issue|content`
+ *
+ * @returns An unsubscribe function to call in onDestroy.
+ */
+export function createNavigationInterceptor (): () => void {
+  let previousFragment: string | undefined
+
+  const unsubscribe = location.subscribe((loc) => {
+    const fragment = loc.fragment
+    if (fragment != null && fragment.length > 0 && fragment !== previousFragment) {
+      try {
+        const parts = decodeURIComponent(fragment).split('|')
+        // parts = ['tracker:EditIssue', 'SUPPORT-42', 'tracker:class:Issue', 'content']
+        if (parts.length >= 3 && parts[2].includes('Issue')) {
+          notifyIssueSelected(parts[1])
+        }
+      } catch {
+        // Ignore malformed fragments
+      }
+      // Undo the navigation — no panel to show in embed context
+      history.back()
+    }
+    previousFragment = fragment
+  })
+
+  return unsubscribe
 }

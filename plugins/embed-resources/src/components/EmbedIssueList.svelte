@@ -12,12 +12,13 @@
   import tracker from '@hcengineering/tracker-resources/src/plugin'
   import { createQuery } from '@hcengineering/presentation'
   import { Component } from '@hcengineering/ui'
-  import { createResizeNotifier } from '../utils'
+  import { createResizeNotifier, createNavigationInterceptor } from '../utils'
 
   export let config: EmbedConfig
 
   let container: HTMLElement
   let observer: ResizeObserver | undefined
+  let unsubscribeNav: (() => void) | undefined
   let project: Project | undefined
 
   const projectQuery = createQuery()
@@ -32,10 +33,12 @@
     if (container !== undefined) {
       observer = createResizeNotifier(container)
     }
+    unsubscribeNav = createNavigationInterceptor()
   })
 
   onDestroy(() => {
     observer?.disconnect()
+    unsubscribeNav?.()
   })
 </script>
 

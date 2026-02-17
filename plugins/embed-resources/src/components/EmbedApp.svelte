@@ -8,6 +8,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { type EmbedConfig } from '@hcengineering/embed'
+  import { Popup, PanelInstance, TooltipInstance } from '@hcengineering/ui'
   import { parseEmbedConfig, notifyReady, notifyError } from '../utils'
   import { bootstrapEmbed } from '../embed'
   import EmbedCreateIssue from './EmbedCreateIssue.svelte'
@@ -67,6 +68,12 @@
     </div>
   {/if}
 </div>
+
+<!-- UI infrastructure: renders popups, tooltips, and panels from global stores.
+     Without these, showPopup() calls (used by all toolbar buttons) silently do nothing. -->
+<Popup contentPanel={undefined} />
+<PanelInstance contentPanel={undefined} />
+<TooltipInstance />
 
 <style lang="scss">
   .embed-app {

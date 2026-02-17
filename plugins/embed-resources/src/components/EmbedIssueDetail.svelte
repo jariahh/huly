@@ -10,21 +10,24 @@
   import { type EmbedConfig } from '@hcengineering/embed'
   import tracker from '@hcengineering/tracker'
   import { Component } from '@hcengineering/ui'
-  import { createResizeNotifier } from '../utils'
+  import { createResizeNotifier, createNavigationInterceptor } from '../utils'
 
   export let config: EmbedConfig
 
   let container: HTMLElement
   let observer: ResizeObserver | undefined
+  let unsubscribeNav: (() => void) | undefined
 
   onMount(() => {
     if (container !== undefined) {
       observer = createResizeNotifier(container)
     }
+    unsubscribeNav = createNavigationInterceptor()
   })
 
   onDestroy(() => {
     observer?.disconnect()
+    unsubscribeNav?.()
   })
 </script>
 

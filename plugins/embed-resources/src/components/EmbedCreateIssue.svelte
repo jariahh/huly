@@ -8,18 +8,28 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
   import { type Ref, SortingOrder } from '@hcengineering/core'
-  import { type EmbedConfig, EmbedEvents } from '@hcengineering/embed'
+  import { type EmbedConfig } from '@hcengineering/embed'
   import tracker, { type Issue, type Project } from '@hcengineering/tracker'
   import { createQuery, getClient } from '@hcengineering/presentation'
   import { Component } from '@hcengineering/ui'
-  import { postToParent, createResizeNotifier } from '../utils'
+  import { createResizeNotifier, notifyIssueCreated, notifyIssueCreateCancelled } from '../utils'
 
   export let config: EmbedConfig
+
+  $: hideStatus = config.hideFields?.includes('status') ?? false
+  $: hidePriority = config.hideFields?.includes('priority') ?? false
+  $: hideAssignee = config.hideFields?.includes('assignee') ?? false
+  $: hideEstimation = config.hideFields?.includes('estimation') ?? false
+  $: hideMilestone = config.hideFields?.includes('milestone') ?? false
+  $: hideDuedate = config.hideFields?.includes('duedate') ?? false
+  $: hideParent = config.hideFields?.includes('parent') ?? false
 
   let container: HTMLElement
   let observer: ResizeObserver | undefined
   let project: Project | undefined
   let latestIssueAtMount: Ref<Issue> | undefined
+  let done = false
+  let createdIdentifier: string | undefined
 
   const projectQuery = createQuery()
 
@@ -40,9 +50,10 @@
     // (Card waits for the createIssue() promise before dispatching 'close').
     try {
       const client = getClient()
+      const query = project?._id !== undefined ? { space: project._id } : {}
       const latest = await client.findAll(
         tracker.class.Issue,
-        {},
+        query,
         { sort: { createdOn: SortingOrder.Descending }, limit: 1 }
       )
       latestIssueAtMount = latest[0]?._id
@@ -58,27 +69,46 @@
   async function handleClose (): Promise<void> {
     try {
       const client = getClient()
+      const query = project?._id !== undefined ? { space: project._id } : {}
       const latest = await client.findAll(
         tracker.class.Issue,
-        {},
+        query,
         { sort: { createdOn: SortingOrder.Descending }, limit: 1 }
       )
       if (latest.length > 0 && latest[0]._id !== latestIssueAtMount) {
-        postToParent(EmbedEvents.IssueCreated, {
-          issueId: latest[0]._id,
-          identifier: latest[0].identifier
-        })
+        createdIdentifier = latest[0].identifier
+        done = true
+        notifyIssueCreated(latest[0]._id, latest[0].identifier)
         return
       }
     } catch {
       // Fall through to cancelled
     }
-    postToParent(EmbedEvents.IssueCreated, { cancelled: true })
+    done = true
+    notifyIssueCreateCancelled()
   }
 </script>
 
-<div class="embed-create-issue" bind:this={container}>
-  {#if project !== undefined || config.project === undefined}
+<div
+  class="embed-create-issue"
+  class:hide-status={hideStatus}
+  class:hide-priority={hidePriority}
+  class:hide-assignee={hideAssignee}
+  class:hide-estimation={hideEstimation}
+  class:hide-milestone={hideMilestone}
+  class:hide-duedate={hideDuedate}
+  class:hide-parent={hideParent}
+  bind:this={container}
+>
+  {#if done}
+    <div class="embed-done">
+      {#if createdIdentifier !== undefined}
+        <p>Issue <strong>{createdIdentifier}</strong> created successfully.</p>
+      {:else}
+        <p>Issue creation cancelled.</p>
+      {/if}
+    </div>
+  {:else if project !== undefined || config.project === undefined}
     <Component
       is={tracker.component.CreateIssue}
       props={{ space: project?._id, shouldSaveDraft: false }}
@@ -93,6 +123,27 @@
   .embed-create-issue {
     width: 100%;
     padding: 1rem;
+
+    // Field visibility: hide toolbar items via their id attributes in CreateIssue.svelte
+    &.hide-status :global(#status-editor) { display: none; }
+    &.hide-priority :global(#priority-editor) { display: none; }
+    &.hide-assignee :global(#assignee-editor) { display: none; }
+    &.hide-estimation :global(#estimation-editor) { display: none; }
+    &.hide-milestone :global(#milestone-editor) { display: none; }
+    &.hide-duedate :global(#duedate-editor) { display: none; }
+    &.hide-parent :global(#parentissue-editor) { display: none; }
+  }
+
+  .embed-done {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    color: var(--theme-content-color, #333);
+
+    strong {
+      font-weight: 600;
+    }
   }
 
   .embed-loading {
