@@ -76,6 +76,15 @@
 <TooltipInstance />
 
 <style lang="scss">
+  // Hide the Root.svelte status bar in embed context — it shows location/timezone
+  // and a gear icon that serve no purpose in an iframe. Also reclaim the height.
+  :global(#ui-root:has(.embed-app) > .antiStatusBar) {
+    display: none !important;
+  }
+  :global(#ui-root:has(.embed-app) > .app) {
+    height: 100% !important;
+  }
+
   .embed-app {
     width: 100%;
     height: 100%;
