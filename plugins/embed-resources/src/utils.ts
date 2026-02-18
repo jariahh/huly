@@ -23,6 +23,7 @@ let _targetOrigin = '*'
 
 /**
  * Send a postMessage to the parent window (iframe host).
+ * @public
  */
 export function postToParent (type: string, payload?: Record<string, any>): void {
   if (window.parent !== window) {
@@ -32,6 +33,7 @@ export function postToParent (type: string, payload?: Record<string, any>): void
 
 /**
  * Send the ready event to the parent.
+ * @public
  */
 export function notifyReady (): void {
   postToParent(EmbedEvents.Ready)
@@ -39,6 +41,7 @@ export function notifyReady (): void {
 
 /**
  * Send a resize event with the current document height.
+ * @public
  */
 export function notifyResize (height: number): void {
   postToParent(EmbedEvents.Resize, { height })
@@ -46,6 +49,7 @@ export function notifyResize (height: number): void {
 
 /**
  * Send an error event to the parent.
+ * @public
  */
 export function notifyError (reason: string): void {
   postToParent(EmbedEvents.Error, { reason })
@@ -53,6 +57,7 @@ export function notifyError (reason: string): void {
 
 /**
  * Parse embed configuration from URL search params.
+ * @public
  */
 export function parseEmbedConfig (search: string): EmbedConfig | undefined {
   const params = new URLSearchParams(search)
@@ -105,6 +110,8 @@ export function parseEmbedConfig (search: string): EmbedConfig | undefined {
  * height including padding and overflow. Also watches for DOM mutations
  * (async content loads, lazy lists) that may change height without
  * triggering a ResizeObserver callback.
+ *
+ * @public
  */
 export function createResizeNotifier (element: HTMLElement): { disconnect: () => void } {
   let lastHeight = 0
@@ -145,6 +152,7 @@ export function createResizeNotifier (element: HTMLElement): { disconnect: () =>
 
 /**
  * Notify the parent that a new issue was created.
+ * @public
  */
 export function notifyIssueCreated (issueId: string, identifier: string): void {
   postToParent(EmbedEvents.IssueCreated, { issueId, identifier })
@@ -152,6 +160,7 @@ export function notifyIssueCreated (issueId: string, identifier: string): void {
 
 /**
  * Notify the parent that issue creation was cancelled.
+ * @public
  */
 export function notifyIssueCreateCancelled (): void {
   postToParent(EmbedEvents.IssueCreated, { cancelled: true })
@@ -159,6 +168,7 @@ export function notifyIssueCreateCancelled (): void {
 
 /**
  * Notify the parent that an issue was selected (clicked) in a list/kanban/detail view.
+ * @public
  */
 export function notifyIssueSelected (identifier: string): void {
   postToParent(EmbedEvents.IssueSelected, { identifier })
@@ -166,6 +176,7 @@ export function notifyIssueSelected (identifier: string): void {
 
 /**
  * Notify the parent that an issue detail view was closed.
+ * @public
  */
 export function notifyIssueClosed (identifier?: string): void {
   postToParent(EmbedEvents.IssueClosed, { identifier })
@@ -173,6 +184,7 @@ export function notifyIssueClosed (identifier?: string): void {
 
 /**
  * Notify the parent that a document was created.
+ * @public
  */
 export function notifyDocumentCreated (documentId: string): void {
   postToParent(EmbedEvents.DocumentCreated, { documentId })
@@ -180,6 +192,7 @@ export function notifyDocumentCreated (documentId: string): void {
 
 /**
  * Notify the parent that a document was selected.
+ * @public
  */
 export function notifyDocumentSelected (documentId: string): void {
   postToParent(EmbedEvents.DocumentSelected, { documentId })
@@ -187,6 +200,7 @@ export function notifyDocumentSelected (documentId: string): void {
 
 /**
  * Notify the parent that a file was selected.
+ * @public
  */
 export function notifyFileSelected (fileId: string): void {
   postToParent(EmbedEvents.FileSelected, { fileId })
@@ -203,6 +217,7 @@ export function notifyFileSelected (fileId: string): void {
  *
  * @param container The DOM element to listen on (captures clicks from all descendants).
  * @returns A cleanup function to call in onDestroy.
+ * @public
  */
 export function createClickInterceptor (container: HTMLElement): () => void {
   function handleClick (event: MouseEvent): void {

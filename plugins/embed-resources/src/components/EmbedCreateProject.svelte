@@ -86,20 +86,4 @@
     padding: 2rem;
     color: var(--theme-content-color, #333);
   }
-
-  .embed-error {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    color: var(--theme-error-color, #f44336);
-  }
-
-  .embed-loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    color: var(--theme-halfcontent-color, #999);
-  }
 </style>

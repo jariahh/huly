@@ -24,6 +24,4 @@ export const serverEmbedId = 'server-embed' as Plugin
 /**
  * @public
  */
-export default plugin(serverEmbedId, {
-  // Phase 4: Token validation triggers and server functions will be defined here
-})
+export default plugin(serverEmbedId, {})

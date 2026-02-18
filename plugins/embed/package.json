@@ -41,7 +41,7 @@
     "@hcengineering/platform": "workspace:^0.7.19",
     "@hcengineering/ui": "workspace:^0.7.0"
   },
-  "repository": "https://github.com/jariahh/huly",
+  "repository": "https://github.com/hcengineering/platform",
   "publishConfig": {
     "access": "public"
   }

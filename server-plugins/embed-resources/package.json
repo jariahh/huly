@@ -42,5 +42,9 @@
     "@hcengineering/platform": "workspace:^0.7.19",
     "@hcengineering/server-core": "workspace:^0.7.18",
     "@hcengineering/server-token": "workspace:^0.7.17"
+  },
+  "repository": "https://github.com/hcengineering/platform",
+  "publishConfig": {
+    "access": "public"
   }
 }

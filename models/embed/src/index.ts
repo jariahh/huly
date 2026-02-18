@@ -58,3 +58,4 @@ export function createModel (builder: Builder): void {
 }
 
 export { embedId } from '@hcengineering/embed'
+export { default } from './plugin'

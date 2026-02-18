@@ -163,7 +163,9 @@
     background: var(--theme-bg-color, #fff);
   }
 
-  .embed-error {
+  // Shared styles for all embed wrapper components.
+  // Defined here as :global() so child wrappers don't need to duplicate them.
+  :global(.embed-error) {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -171,7 +173,7 @@
     color: var(--theme-error-color, #f44336);
   }
 
-  .embed-loading {
+  :global(.embed-loading) {
     display: flex;
     align-items: center;
     justify-content: center;

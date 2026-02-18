@@ -1,4 +1,3 @@
-// @jest-environment jsdom
 //
 // Copyright © 2024 Hardcore Engineering Inc.
 //
@@ -14,11 +13,9 @@
 // limitations under the License.
 //
 
-// ---------------------------------------------------------------------------
 // Inline mock factory — defines constants without going through the monorepo
 // build graph. Must be declared before any imports that would pull in the real
 // @hcengineering/embed via ts-jest.
-// ---------------------------------------------------------------------------
 
 jest.mock('@hcengineering/embed', () => ({
   EmbedEvents: {
@@ -43,9 +40,7 @@ const { ALL_HIDEABLE_FIELDS } = jest.requireMock('@hcengineering/embed') as {
   ALL_HIDEABLE_FIELDS: string[]
 }
 
-// ---------------------------------------------------------------------------
 // Helpers
-// ---------------------------------------------------------------------------
 
 /**
  * Shared mock factory used both in the module-level jest.mock() call above
@@ -106,9 +101,7 @@ function mockInsideIframe (): { postMessageSpy: jest.Mock, restore: () => void }
   }
 }
 
-// ---------------------------------------------------------------------------
 // parseEmbedConfig
-// ---------------------------------------------------------------------------
 
 describe('parseEmbedConfig', () => {
   let parseEmbedConfig: typeof import('../utils')['parseEmbedConfig']
@@ -330,9 +323,7 @@ describe('parseEmbedConfig', () => {
   })
 })
 
-// ---------------------------------------------------------------------------
 // postToParent
-// ---------------------------------------------------------------------------
 
 describe('postToParent', () => {
   let postToParent: typeof import('../utils')['postToParent']
@@ -383,9 +374,7 @@ describe('postToParent', () => {
   })
 })
 
-// ---------------------------------------------------------------------------
 // notify* convenience functions
-// ---------------------------------------------------------------------------
 
 describe('notify functions', () => {
   let utils: Awaited<ReturnType<typeof freshUtils>>
@@ -484,9 +473,7 @@ describe('notify functions', () => {
   })
 })
 
-// ---------------------------------------------------------------------------
 // createResizeNotifier
-// ---------------------------------------------------------------------------
 
 describe('createResizeNotifier', () => {
   let createResizeNotifier: typeof import('../utils')['createResizeNotifier']
@@ -656,9 +643,7 @@ describe('createResizeNotifier', () => {
   })
 })
 
-// ---------------------------------------------------------------------------
 // createClickInterceptor
-// ---------------------------------------------------------------------------
 
 describe('createClickInterceptor', () => {
   let createClickInterceptor: typeof import('../utils')['createClickInterceptor']

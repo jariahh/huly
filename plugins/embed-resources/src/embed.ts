@@ -38,6 +38,8 @@ import presentation, { setClient, setPresentationCookie } from '@hcengineering/p
  * 5. Create the platform client (WebSocket connection)
  * 6. Set current account context (socialIds, role)
  * 7. Initialize the presentation layer (LiveQuery, pipeline)
+ *
+ * @public
  */
 export async function bootstrapEmbed (config: EmbedConfig): Promise<void> {
   // 1. Validate token and get workspace info from accounts server

@@ -65,5 +65,9 @@
       "require": "./assets/*.svg",
       "import": "./assets/*.svg"
     }
+  },
+  "repository": "https://github.com/hcengineering/platform",
+  "publishConfig": {
+    "access": "public"
   }
 }

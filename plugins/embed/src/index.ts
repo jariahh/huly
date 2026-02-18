@@ -50,10 +50,6 @@ export type EmbedComponentType =
   | 'applications'
 
 /**
- * Configuration passed to embedded components via URL params.
- * @public
- */
-/**
  * Field names that can be hidden in the create-issue form.
  * @public
  */
@@ -77,6 +73,7 @@ export const ALL_HIDEABLE_FIELDS: EmbedHideableField[] = [
   'estimation', 'milestone', 'duedate', 'parent'
 ]
 
+/** @public */
 export interface EmbedConfig {
   component: EmbedComponentType
   token: string
@@ -154,33 +151,33 @@ const embedPlugin = plugin(embedId, {
     EmbedLink: '' as Ref<Class<EmbedLink>>
   },
   component: {
+    EmbedActivity: '' as AnyComponent,
     EmbedApp: '' as AnyComponent,
-    EmbedCreateIssue: '' as AnyComponent,
-    EmbedIssueList: '' as AnyComponent,
-    EmbedIssueDetail: '' as AnyComponent,
-    EmbedKanban: '' as AnyComponent,
+    EmbedApplications: '' as AnyComponent,
+    EmbedBoard: '' as AnyComponent,
+    EmbedCalendar: '' as AnyComponent,
     EmbedComments: '' as AnyComponent,
-    EmbedMyIssues: '' as AnyComponent,
-    EmbedMilestones: '' as AnyComponent,
-    EmbedMilestoneDetail: '' as AnyComponent,
     EmbedComponents: '' as AnyComponent,
-    EmbedIssueTemplates: '' as AnyComponent,
-    EmbedIssuePreview: '' as AnyComponent,
-    EmbedTimeReports: '' as AnyComponent,
+    EmbedCreateDocument: '' as AnyComponent,
+    EmbedCreateIssue: '' as AnyComponent,
     EmbedCreateProject: '' as AnyComponent,
+    EmbedDepartmentStaff: '' as AnyComponent,
     EmbedDocument: '' as AnyComponent,
     EmbedDocumentList: '' as AnyComponent,
-    EmbedCreateDocument: '' as AnyComponent,
     EmbedFileBrowser: '' as AnyComponent,
     EmbedFileDetail: '' as AnyComponent,
-    EmbedThread: '' as AnyComponent,
-    EmbedActivity: '' as AnyComponent,
-    EmbedCalendar: '' as AnyComponent,
-    EmbedBoard: '' as AnyComponent,
-    EmbedDepartmentStaff: '' as AnyComponent,
-    EmbedToDos: '' as AnyComponent,
+    EmbedIssueDetail: '' as AnyComponent,
+    EmbedIssueList: '' as AnyComponent,
+    EmbedIssuePreview: '' as AnyComponent,
+    EmbedIssueTemplates: '' as AnyComponent,
+    EmbedKanban: '' as AnyComponent,
+    EmbedMilestoneDetail: '' as AnyComponent,
+    EmbedMilestones: '' as AnyComponent,
+    EmbedMyIssues: '' as AnyComponent,
     EmbedMyLeads: '' as AnyComponent,
-    EmbedApplications: '' as AnyComponent
+    EmbedThread: '' as AnyComponent,
+    EmbedTimeReports: '' as AnyComponent,
+    EmbedToDos: '' as AnyComponent
   },
   icon: {
     Embed: '' as Asset

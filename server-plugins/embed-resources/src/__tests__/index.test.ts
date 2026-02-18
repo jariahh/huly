@@ -16,9 +16,7 @@
 import type { MeasureContext, WorkspaceIds, WorkspaceUuid } from '@hcengineering/core'
 import type { EmbedComponentType } from '@hcengineering/embed'
 
-// ---------------------------------------------------------------------------
 // Module mocks — must be declared before any imports from the module under test
-// ---------------------------------------------------------------------------
 
 jest.mock('@hcengineering/core', () => ({
   concatLink: jest.fn((base: string, path: string) => {
@@ -60,9 +58,7 @@ jest.mock('@hcengineering/server-token', () => ({
   TokenError: MockTokenError
 }))
 
-// ---------------------------------------------------------------------------
 // Import mocked modules and the module under test
-// ---------------------------------------------------------------------------
 
 import { concatLink } from '@hcengineering/core'
 import { getMetadata } from '@hcengineering/platform'
@@ -71,18 +67,14 @@ import serverCore from '@hcengineering/server-core'
 
 import { generateEmbedUrl, validateEmbedToken, isEmbedToken, type EmbedTokenData } from '../index'
 
-// ---------------------------------------------------------------------------
 // Typed mock helpers
-// ---------------------------------------------------------------------------
 
 const mockConcatLink = concatLink as jest.MockedFunction<typeof concatLink>
 const mockGetMetadata = getMetadata as jest.MockedFunction<typeof getMetadata>
 const mockGenerateToken = generateToken as jest.MockedFunction<typeof generateToken>
 const mockDecodeTokenVerbose = decodeTokenVerbose as jest.MockedFunction<typeof decodeTokenVerbose>
 
-// ---------------------------------------------------------------------------
 // Shared test fixtures
-// ---------------------------------------------------------------------------
 
 const TEST_WORKSPACE: WorkspaceIds = {
   uuid: '11111111-1111-1111-1111-111111111111' as WorkspaceUuid,
@@ -103,9 +95,7 @@ const mockMeasureContext: MeasureContext = {
   contextData: {}
 } as unknown as MeasureContext
 
-// ---------------------------------------------------------------------------
 // Tests: isEmbedToken
-// ---------------------------------------------------------------------------
 
 describe('isEmbedToken', () => {
   it('returns true for extra with embed === "true"', () => {
@@ -133,9 +123,7 @@ describe('isEmbedToken', () => {
   })
 })
 
-// ---------------------------------------------------------------------------
 // Tests: generateEmbedUrl
-// ---------------------------------------------------------------------------
 
 describe('generateEmbedUrl', () => {
   const FAKE_TOKEN = 'fake.jwt.token'
@@ -287,9 +275,7 @@ describe('generateEmbedUrl', () => {
   })
 })
 
-// ---------------------------------------------------------------------------
 // Tests: validateEmbedToken
-// ---------------------------------------------------------------------------
 
 describe('validateEmbedToken', () => {
   const VALID_ACCOUNT = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
@@ -488,9 +474,7 @@ describe('validateEmbedToken', () => {
   })
 })
 
-// ---------------------------------------------------------------------------
 // Tests: default export (Resources factory)
-// ---------------------------------------------------------------------------
 
 describe('default export', () => {
   it('returns an empty Resources object when called', async () => {

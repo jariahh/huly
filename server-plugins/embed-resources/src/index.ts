@@ -32,6 +32,7 @@ import { generateToken, decodeTokenVerbose, TokenError } from '@hcengineering/se
 
 /**
  * Decoded embed token data.
+ * @public
  */
 export interface EmbedTokenData {
   account: string
@@ -43,6 +44,7 @@ export interface EmbedTokenData {
 
 /**
  * Generate a URL for an embedded component.
+ * @public
  */
 export function generateEmbedUrl (
   workspace: WorkspaceIds,
@@ -82,6 +84,7 @@ export function generateEmbedUrl (
 /**
  * Validate and decode an embed token.
  * Checks that the token is a valid embed token (not just any JWT).
+ * @public
  */
 export function validateEmbedToken (ctx: MeasureContext, token: string): EmbedTokenData {
   const decoded = decodeTokenVerbose(ctx, token)
@@ -111,6 +114,7 @@ export function validateEmbedToken (ctx: MeasureContext, token: string): EmbedTo
 
 /**
  * Check if a token is an embed token (non-throwing).
+ * @public
  */
 export function isEmbedToken (extra: Record<string, any> | undefined): boolean {
   return extra?.embed === 'true'
@@ -118,5 +122,6 @@ export function isEmbedToken (extra: Record<string, any> | undefined): boolean {
 
 /**
  * Server-side embed resources.
+ * @public
  */
 export default async (): Promise<Resources> => ({})

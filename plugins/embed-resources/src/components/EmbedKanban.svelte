@@ -71,11 +71,4 @@
     :global(.switcher-container.subtle) { display: none; }
   }
 
-  .embed-loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    color: var(--theme-halfcontent-color, #999);
-  }
 </style>
