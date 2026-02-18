@@ -7,8 +7,8 @@
   "scripts": {
     "build": "compile ui",
     "build:docs": "api-extractor run --local",
-    "svelte-check": "do-svelte-check",
-    "_phase:svelte-check": "do-svelte-check",
+    "svelte-check": "node scripts/svelte-check-filter.js",
+    "_phase:svelte-check": "node scripts/svelte-check-filter.js",
     "format": "format src",
     "build:watch": "compile ui",
     "_phase:build": "compile ui",
