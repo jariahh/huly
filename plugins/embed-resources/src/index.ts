@@ -20,6 +20,27 @@ import EmbedIssueList from './components/EmbedIssueList.svelte'
 import EmbedIssueDetail from './components/EmbedIssueDetail.svelte'
 import EmbedKanban from './components/EmbedKanban.svelte'
 import EmbedComments from './components/EmbedComments.svelte'
+import EmbedMyIssues from './components/EmbedMyIssues.svelte'
+import EmbedMilestones from './components/EmbedMilestones.svelte'
+import EmbedMilestoneDetail from './components/EmbedMilestoneDetail.svelte'
+import EmbedComponents from './components/EmbedComponents.svelte'
+import EmbedIssueTemplates from './components/EmbedIssueTemplates.svelte'
+import EmbedIssuePreview from './components/EmbedIssuePreview.svelte'
+import EmbedTimeReports from './components/EmbedTimeReports.svelte'
+import EmbedCreateProject from './components/EmbedCreateProject.svelte'
+import EmbedDocument from './components/EmbedDocument.svelte'
+import EmbedDocumentList from './components/EmbedDocumentList.svelte'
+import EmbedCreateDocument from './components/EmbedCreateDocument.svelte'
+import EmbedFileBrowser from './components/EmbedFileBrowser.svelte'
+import EmbedFileDetail from './components/EmbedFileDetail.svelte'
+import EmbedThread from './components/EmbedThread.svelte'
+import EmbedActivity from './components/EmbedActivity.svelte'
+import EmbedCalendar from './components/EmbedCalendar.svelte'
+import EmbedBoard from './components/EmbedBoard.svelte'
+import EmbedDepartmentStaff from './components/EmbedDepartmentStaff.svelte'
+import EmbedToDos from './components/EmbedToDos.svelte'
+import EmbedMyLeads from './components/EmbedMyLeads.svelte'
+import EmbedApplications from './components/EmbedApplications.svelte'
 
 export default async (): Promise<Resources> => ({
   component: {
@@ -28,6 +49,27 @@ export default async (): Promise<Resources> => ({
     EmbedIssueList,
     EmbedIssueDetail,
     EmbedKanban,
-    EmbedComments
+    EmbedComments,
+    EmbedMyIssues,
+    EmbedMilestones,
+    EmbedMilestoneDetail,
+    EmbedComponents,
+    EmbedIssueTemplates,
+    EmbedIssuePreview,
+    EmbedTimeReports,
+    EmbedCreateProject,
+    EmbedDocument,
+    EmbedDocumentList,
+    EmbedCreateDocument,
+    EmbedFileBrowser,
+    EmbedFileDetail,
+    EmbedThread,
+    EmbedActivity,
+    EmbedCalendar,
+    EmbedBoard,
+    EmbedDepartmentStaff,
+    EmbedToDos,
+    EmbedMyLeads,
+    EmbedApplications
   }
 })

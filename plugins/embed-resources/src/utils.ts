@@ -84,7 +84,17 @@ export function parseEmbedConfig (search: string): EmbedConfig | undefined {
     project: params.get('project') ?? undefined,
     issue: params.get('issue') ?? undefined,
     externalUser: params.get('externalUser') ?? undefined,
-    hideFields
+    hideFields,
+    document: params.get('document') ?? undefined,
+    file: params.get('file') ?? undefined,
+    folder: params.get('folder') ?? undefined,
+    drive: params.get('drive') ?? undefined,
+    thread: params.get('thread') ?? undefined,
+    department: params.get('department') ?? undefined,
+    milestone: params.get('milestone') ?? undefined,
+    space: params.get('space') ?? undefined,
+    readonly: params.get('readonly') === 'true',
+    mode: params.get('mode') ?? undefined
   }
 }
 
@@ -127,6 +137,27 @@ export function notifyIssueSelected (identifier: string): void {
  */
 export function notifyIssueClosed (identifier?: string): void {
   postToParent(EmbedEvents.IssueClosed, { identifier })
+}
+
+/**
+ * Notify the parent that a document was created.
+ */
+export function notifyDocumentCreated (documentId: string): void {
+  postToParent(EmbedEvents.DocumentCreated, { documentId })
+}
+
+/**
+ * Notify the parent that a document was selected.
+ */
+export function notifyDocumentSelected (documentId: string): void {
+  postToParent(EmbedEvents.DocumentSelected, { documentId })
+}
+
+/**
+ * Notify the parent that a file was selected.
+ */
+export function notifyFileSelected (fileId: string): void {
+  postToParent(EmbedEvents.FileSelected, { fileId })
 }
 
 /**

@@ -16,6 +16,27 @@
   import EmbedIssueDetail from './EmbedIssueDetail.svelte'
   import EmbedKanban from './EmbedKanban.svelte'
   import EmbedComments from './EmbedComments.svelte'
+  import EmbedMyIssues from './EmbedMyIssues.svelte'
+  import EmbedMilestones from './EmbedMilestones.svelte'
+  import EmbedMilestoneDetail from './EmbedMilestoneDetail.svelte'
+  import EmbedComponents from './EmbedComponents.svelte'
+  import EmbedIssueTemplates from './EmbedIssueTemplates.svelte'
+  import EmbedIssuePreview from './EmbedIssuePreview.svelte'
+  import EmbedTimeReports from './EmbedTimeReports.svelte'
+  import EmbedCreateProject from './EmbedCreateProject.svelte'
+  import EmbedDocument from './EmbedDocument.svelte'
+  import EmbedDocumentList from './EmbedDocumentList.svelte'
+  import EmbedCreateDocument from './EmbedCreateDocument.svelte'
+  import EmbedFileBrowser from './EmbedFileBrowser.svelte'
+  import EmbedFileDetail from './EmbedFileDetail.svelte'
+  import EmbedThread from './EmbedThread.svelte'
+  import EmbedActivity from './EmbedActivity.svelte'
+  import EmbedCalendar from './EmbedCalendar.svelte'
+  import EmbedBoard from './EmbedBoard.svelte'
+  import EmbedDepartmentStaff from './EmbedDepartmentStaff.svelte'
+  import EmbedToDos from './EmbedToDos.svelte'
+  import EmbedMyLeads from './EmbedMyLeads.svelte'
+  import EmbedApplications from './EmbedApplications.svelte'
 
   let config: EmbedConfig | undefined
   let clientReady = false
@@ -57,6 +78,48 @@
       <EmbedKanban {config} />
     {:else if config.component === 'comments'}
       <EmbedComments {config} />
+    {:else if config.component === 'my-issues'}
+      <EmbedMyIssues {config} />
+    {:else if config.component === 'milestones'}
+      <EmbedMilestones {config} />
+    {:else if config.component === 'milestone-detail'}
+      <EmbedMilestoneDetail {config} />
+    {:else if config.component === 'components'}
+      <EmbedComponents {config} />
+    {:else if config.component === 'issue-templates'}
+      <EmbedIssueTemplates {config} />
+    {:else if config.component === 'issue-preview'}
+      <EmbedIssuePreview {config} />
+    {:else if config.component === 'time-reports'}
+      <EmbedTimeReports {config} />
+    {:else if config.component === 'create-project'}
+      <EmbedCreateProject {config} />
+    {:else if config.component === 'document'}
+      <EmbedDocument {config} />
+    {:else if config.component === 'document-list'}
+      <EmbedDocumentList {config} />
+    {:else if config.component === 'create-document'}
+      <EmbedCreateDocument {config} />
+    {:else if config.component === 'file-browser'}
+      <EmbedFileBrowser {config} />
+    {:else if config.component === 'file-detail'}
+      <EmbedFileDetail {config} />
+    {:else if config.component === 'thread'}
+      <EmbedThread {config} />
+    {:else if config.component === 'activity'}
+      <EmbedActivity {config} />
+    {:else if config.component === 'calendar'}
+      <EmbedCalendar {config} />
+    {:else if config.component === 'board'}
+      <EmbedBoard {config} />
+    {:else if config.component === 'department-staff'}
+      <EmbedDepartmentStaff {config} />
+    {:else if config.component === 'todos'}
+      <EmbedToDos {config} />
+    {:else if config.component === 'my-leads'}
+      <EmbedMyLeads {config} />
+    {:else if config.component === 'applications'}
+      <EmbedApplications {config} />
     {:else}
       <div class="embed-error">
         <p>Unknown component: {config.component}</p>

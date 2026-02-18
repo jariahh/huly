@@ -27,6 +27,27 @@ export type EmbedComponentType =
   | 'issue-detail'
   | 'kanban'
   | 'comments'
+  | 'my-issues'
+  | 'milestones'
+  | 'milestone-detail'
+  | 'components'
+  | 'issue-templates'
+  | 'issue-preview'
+  | 'time-reports'
+  | 'create-project'
+  | 'document'
+  | 'document-list'
+  | 'create-document'
+  | 'file-browser'
+  | 'file-detail'
+  | 'thread'
+  | 'activity'
+  | 'calendar'
+  | 'board'
+  | 'department-staff'
+  | 'todos'
+  | 'my-leads'
+  | 'applications'
 
 /**
  * Configuration passed to embedded components via URL params.
@@ -63,6 +84,16 @@ export interface EmbedConfig {
   issue?: string
   externalUser?: string
   hideFields?: EmbedHideableField[]
+  document?: string
+  file?: string
+  folder?: string
+  drive?: string
+  thread?: string
+  department?: string
+  milestone?: string
+  space?: string
+  readonly?: boolean
+  mode?: string
 }
 
 /**
@@ -99,6 +130,9 @@ export const EmbedEvents = {
   IssueCreated: 'huly-embed-issue-created',
   IssueSelected: 'huly-embed-issue-selected',
   IssueClosed: 'huly-embed-issue-closed',
+  DocumentCreated: 'huly-embed-document-created',
+  DocumentSelected: 'huly-embed-document-selected',
+  FileSelected: 'huly-embed-file-selected',
   Resize: 'huly-embed-resize',
   Error: 'huly-embed-error'
 } as const
@@ -125,7 +159,28 @@ const embedPlugin = plugin(embedId, {
     EmbedIssueList: '' as AnyComponent,
     EmbedIssueDetail: '' as AnyComponent,
     EmbedKanban: '' as AnyComponent,
-    EmbedComments: '' as AnyComponent
+    EmbedComments: '' as AnyComponent,
+    EmbedMyIssues: '' as AnyComponent,
+    EmbedMilestones: '' as AnyComponent,
+    EmbedMilestoneDetail: '' as AnyComponent,
+    EmbedComponents: '' as AnyComponent,
+    EmbedIssueTemplates: '' as AnyComponent,
+    EmbedIssuePreview: '' as AnyComponent,
+    EmbedTimeReports: '' as AnyComponent,
+    EmbedCreateProject: '' as AnyComponent,
+    EmbedDocument: '' as AnyComponent,
+    EmbedDocumentList: '' as AnyComponent,
+    EmbedCreateDocument: '' as AnyComponent,
+    EmbedFileBrowser: '' as AnyComponent,
+    EmbedFileDetail: '' as AnyComponent,
+    EmbedThread: '' as AnyComponent,
+    EmbedActivity: '' as AnyComponent,
+    EmbedCalendar: '' as AnyComponent,
+    EmbedBoard: '' as AnyComponent,
+    EmbedDepartmentStaff: '' as AnyComponent,
+    EmbedToDos: '' as AnyComponent,
+    EmbedMyLeads: '' as AnyComponent,
+    EmbedApplications: '' as AnyComponent
   },
   icon: {
     Embed: '' as Asset
