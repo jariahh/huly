@@ -24,7 +24,7 @@ import core, {
 import { type EmbedConfig } from '@hcengineering/embed'
 import login from '@hcengineering/login'
 import { getMetadata, getResource, setMetadata } from '@hcengineering/platform'
-import presentation, { setClient } from '@hcengineering/presentation'
+import presentation, { setClient, setPresentationCookie } from '@hcengineering/presentation'
 
 /**
  * Minimal platform bootstrap for embedded components.
@@ -33,9 +33,11 @@ import presentation, { setClient } from '@hcengineering/presentation'
  * Flow:
  * 1. Validate token via accounts API → get workspace info (endpoint, UUID, role)
  * 2. Set platform metadata (token, endpoint, workspace)
- * 3. Create the platform client (WebSocket connection)
- * 4. Set current account context (socialIds, role)
- * 5. Initialize the presentation layer (LiveQuery, pipeline)
+ * 3. Set file auth cookie for attachment/image downloads
+ * 4. Configure client protocol
+ * 5. Create the platform client (WebSocket connection)
+ * 6. Set current account context (socialIds, role)
+ * 7. Initialize the presentation layer (LiveQuery, pipeline)
  */
 export async function bootstrapEmbed (config: EmbedConfig): Promise<void> {
   // 1. Validate token and get workspace info from accounts server
@@ -59,12 +61,15 @@ export async function bootstrapEmbed (config: EmbedConfig): Promise<void> {
   setMetadata(presentation.metadata.WorkspaceName, wsInfo.workspaceUrl)
   setMetadata(presentation.metadata.Endpoint, wsInfo.endpoint)
 
-  // 3. Configure client protocol
+  // 3. Set file auth cookie so attachments/images load without 401
+  setPresentationCookie(wsInfo.token, wsInfo.workspace)
+
+  // 4. Configure client protocol
   setMetadata(clientPlugin.metadata.UseBinaryProtocol, true)
   setMetadata(clientPlugin.metadata.UseProtocolCompression, true)
   setMetadata(clientPlugin.metadata.FilterModel, 'ui')
 
-  // 4. Create platform client
+  // 5. Create platform client
   const endpoint = getMetadata(login.metadata.TransactorOverride) ?? wsInfo.endpoint
   const clientFactory = await getResource(clientPlugin.function.GetClient)
   const newClient = await clientFactory(wsInfo.token, endpoint, {
@@ -75,7 +80,7 @@ export async function bootstrapEmbed (config: EmbedConfig): Promise<void> {
     }
   })
 
-  // 5. Build account context from social IDs
+  // 6. Build account context from social IDs
   const socialIds = await accountClient.getSocialIds(true)
   const me: Account = {
     uuid: wsInfo.account,
@@ -86,6 +91,6 @@ export async function bootstrapEmbed (config: EmbedConfig): Promise<void> {
   }
   setCurrentAccount(me)
 
-  // 6. Initialize presentation layer (LiveQuery, pipeline, getClient())
+  // 7. Initialize presentation layer (LiveQuery, pipeline, getClient())
   await setClient(newClient)
 }
