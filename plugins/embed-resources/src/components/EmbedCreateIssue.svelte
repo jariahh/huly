@@ -126,7 +126,28 @@
 <style lang="scss">
   .embed-create-issue {
     width: 100%;
-    padding: 1rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    // Strip dialog/modal styling from CreateIssue's Card component.
+    // The Card renders as .antiCard.dialog.large — a floating modal with shadow,
+    // border-radius, max-width, and an X close button. For embed context we want
+    // the form to render inline, filling its container with no chrome.
+    :global(.antiCard.dialog) {
+      max-width: none !important;
+      width: 100% !important;
+      height: 100% !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      border: none !important;
+      margin: 0 !important;
+    }
+
+    // Hide the close (X) button in the card header — there's nothing to "close" in embed
+    :global(.antiCard-header > .antiCard-header__right-panel > button.iconOnly) {
+      display: none !important;
+    }
 
     // Field visibility: hide toolbar items in CreateIssue.svelte's pool slot.
     // Most fields have id-bearing wrapper divs; labels and component are bare components

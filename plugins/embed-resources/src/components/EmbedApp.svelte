@@ -85,10 +85,19 @@
     height: 100% !important;
   }
 
+  // Make the body background transparent in embed context so the host app's
+  // background shows through. The default Huly theme sets a light gray body bg
+  // which looks like a modal backdrop when the create-issue card floats over it.
+  :global(body:has(.embed-app)) {
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+
   .embed-app {
     width: 100%;
     height: 100%;
     overflow: auto;
+    background: var(--theme-bg-color, #fff);
   }
 
   .embed-error {
