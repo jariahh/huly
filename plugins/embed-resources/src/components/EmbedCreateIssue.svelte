@@ -27,7 +27,7 @@
   $: hideParent = config.hideFields?.includes('parent') ?? false
 
   let container: HTMLElement
-  let observer: ResizeObserver | undefined
+  let observer: { disconnect: () => void } | undefined
   let project: Project | undefined
   let latestIssueAtMount: Ref<Issue> | undefined
   let done = false

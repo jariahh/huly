@@ -492,79 +492,167 @@ describe('createResizeNotifier', () => {
   let createResizeNotifier: typeof import('../utils')['createResizeNotifier']
   let postMessageSpy: jest.Mock
   let restore: () => void
-  let observeSpy: jest.Mock
+  let resizeObserverObserveSpy: jest.Mock
+  let resizeObserverDisconnectSpy: jest.Mock
+  let mutationObserverObserveSpy: jest.Mock
+  let mutationObserverDisconnectSpy: jest.Mock
+  let resizeCallback: Function
+  let mutationCallback: Function
   let originalResizeObserver: typeof ResizeObserver
+  let originalMutationObserver: typeof MutationObserver
+  let originalRAF: typeof requestAnimationFrame
 
   beforeEach(async () => {
     const utils = await freshUtils()
     createResizeNotifier = utils.createResizeNotifier
     ;({ postMessageSpy, restore } = mockInsideIframe())
 
-    observeSpy = jest.fn()
+    resizeObserverObserveSpy = jest.fn()
+    resizeObserverDisconnectSpy = jest.fn()
+    mutationObserverObserveSpy = jest.fn()
+    mutationObserverDisconnectSpy = jest.fn()
     originalResizeObserver = window.ResizeObserver
+    originalMutationObserver = window.MutationObserver
+    originalRAF = window.requestAnimationFrame
 
-    // Provide a minimal ResizeObserver stub (jsdom does not implement it).
-    // The _callback property exposes the constructor argument for test use.
+    // Stub ResizeObserver (jsdom does not implement it)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ;(window as any).ResizeObserver = jest.fn().mockImplementation((callback: ResizeObserverCallback) => ({
-      observe: observeSpy,
-      disconnect: jest.fn(),
-      _callback: callback
-    }))
+    ;(window as any).ResizeObserver = jest.fn().mockImplementation((callback: Function) => {
+      resizeCallback = callback
+      return {
+        observe: resizeObserverObserveSpy,
+        disconnect: resizeObserverDisconnectSpy
+      }
+    })
+
+    // Stub MutationObserver
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ;(window as any).MutationObserver = jest.fn().mockImplementation((callback: Function) => {
+      mutationCallback = callback
+      return {
+        observe: mutationObserverObserveSpy,
+        disconnect: mutationObserverDisconnectSpy
+      }
+    })
+
+    // Execute requestAnimationFrame callbacks synchronously
+    window.requestAnimationFrame = (cb: FrameRequestCallback) => { cb(0); return 0 }
   })
 
   afterEach(() => {
     window.ResizeObserver = originalResizeObserver
+    window.MutationObserver = originalMutationObserver
+    window.requestAnimationFrame = originalRAF
     restore()
   })
 
-  it('creates a ResizeObserver and starts observing the given element', () => {
+  it('creates a ResizeObserver observing both the element and document.documentElement', () => {
     const el = document.createElement('div')
     createResizeNotifier(el)
     expect(window.ResizeObserver).toHaveBeenCalledTimes(1)
-    expect(observeSpy).toHaveBeenCalledWith(el)
+    expect(resizeObserverObserveSpy).toHaveBeenCalledWith(el)
+    expect(resizeObserverObserveSpy).toHaveBeenCalledWith(document.documentElement)
   })
 
-  it('returns the ResizeObserver instance', () => {
+  it('creates a MutationObserver on the element with childList + subtree', () => {
+    const el = document.createElement('div')
+    createResizeNotifier(el)
+    expect(window.MutationObserver).toHaveBeenCalledTimes(1)
+    expect(mutationObserverObserveSpy).toHaveBeenCalledWith(el, { childList: true, subtree: true })
+  })
+
+  it('returns an object with a disconnect method', () => {
     const el = document.createElement('div')
     const observer = createResizeNotifier(el)
     expect(observer).toBeDefined()
-    expect(typeof observer.observe).toBe('function')
+    expect(typeof observer.disconnect).toBe('function')
   })
 
-  it('sends huly-embed-resize with the Math.ceil of the entry height', () => {
+  it('disconnect() cleans up both ResizeObserver and MutationObserver', () => {
     const el = document.createElement('div')
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const observer = createResizeNotifier(el) as any
-    observer._callback([{ contentRect: { height: 123.4 } }])
+    const observer = createResizeNotifier(el)
+    observer.disconnect()
+    expect(resizeObserverDisconnectSpy).toHaveBeenCalledTimes(1)
+    expect(mutationObserverDisconnectSpy).toHaveBeenCalledTimes(1)
+  })
+
+  it('uses scrollHeight/offsetHeight instead of contentRect for height measurement', () => {
+    const el = document.createElement('div')
+    // Set scrollHeight and offsetHeight to simulate real element sizing
+    Object.defineProperty(el, 'scrollHeight', { value: 450, configurable: true })
+    Object.defineProperty(el, 'offsetHeight', { value: 400, configurable: true })
+    // documentElement.scrollHeight defaults to 0 in jsdom
+
+    createResizeNotifier(el)
+    // Initial rAF fires with max(scrollHeight=450, offsetHeight=400, docEl.scrollHeight=0) = 450
     expect(postMessageSpy).toHaveBeenCalledWith(
-      { type: 'huly-embed-resize', height: 124 },
+      { type: 'huly-embed-resize', height: 450 },
       '*'
     )
   })
 
-  it('sends an exact integer height when the height is already a whole number', () => {
+  it('reports the larger of element scrollHeight and documentElement scrollHeight', () => {
     const el = document.createElement('div')
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const observer = createResizeNotifier(el) as any
-    observer._callback([{ contentRect: { height: 300 } }])
+    Object.defineProperty(el, 'scrollHeight', { value: 100, configurable: true })
+    Object.defineProperty(el, 'offsetHeight', { value: 100, configurable: true })
+    Object.defineProperty(document.documentElement, 'scrollHeight', { value: 800, configurable: true })
+
+    createResizeNotifier(el)
     expect(postMessageSpy).toHaveBeenCalledWith(
-      { type: 'huly-embed-resize', height: 300 },
+      { type: 'huly-embed-resize', height: 800 },
+      '*'
+    )
+
+    // Restore
+    Object.defineProperty(document.documentElement, 'scrollHeight', { value: 0, configurable: true })
+  })
+
+  it('deduplicates — does not fire if height has not changed', () => {
+    const el = document.createElement('div')
+    Object.defineProperty(el, 'scrollHeight', { value: 300, configurable: true })
+    Object.defineProperty(el, 'offsetHeight', { value: 300, configurable: true })
+
+    createResizeNotifier(el)
+    postMessageSpy.mockClear()
+
+    // Trigger ResizeObserver callback — height is still 300, should not fire
+    resizeCallback()
+    expect(postMessageSpy).not.toHaveBeenCalled()
+  })
+
+  it('fires again when height changes between callbacks', () => {
+    const el = document.createElement('div')
+    Object.defineProperty(el, 'scrollHeight', { value: 300, configurable: true, writable: true })
+    Object.defineProperty(el, 'offsetHeight', { value: 300, configurable: true, writable: true })
+
+    createResizeNotifier(el)
+    postMessageSpy.mockClear()
+
+    // Simulate content growing
+    Object.defineProperty(el, 'scrollHeight', { value: 500, configurable: true, writable: true })
+    Object.defineProperty(el, 'offsetHeight', { value: 500, configurable: true, writable: true })
+    resizeCallback()
+    expect(postMessageSpy).toHaveBeenCalledWith(
+      { type: 'huly-embed-resize', height: 500 },
       '*'
     )
   })
 
-  it('fires notifyResize once per entry in a batch callback invocation', () => {
+  it('MutationObserver callback also triggers height measurement', () => {
     const el = document.createElement('div')
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const observer = createResizeNotifier(el) as any
-    observer._callback([
-      { contentRect: { height: 100 } },
-      { contentRect: { height: 200.1 } }
-    ])
-    expect(postMessageSpy).toHaveBeenCalledTimes(2)
-    expect(postMessageSpy).toHaveBeenNthCalledWith(1, { type: 'huly-embed-resize', height: 100 }, '*')
-    expect(postMessageSpy).toHaveBeenNthCalledWith(2, { type: 'huly-embed-resize', height: 201 }, '*')
+    Object.defineProperty(el, 'scrollHeight', { value: 200, configurable: true, writable: true })
+    Object.defineProperty(el, 'offsetHeight', { value: 200, configurable: true, writable: true })
+
+    createResizeNotifier(el)
+    postMessageSpy.mockClear()
+
+    // Simulate DOM mutation causing content to grow
+    Object.defineProperty(el, 'scrollHeight', { value: 350, configurable: true, writable: true })
+    mutationCallback()
+    expect(postMessageSpy).toHaveBeenCalledWith(
+      { type: 'huly-embed-resize', height: 350 },
+      '*'
+    )
   })
 })
 

@@ -99,16 +99,48 @@ export function parseEmbedConfig (search: string): EmbedConfig | undefined {
 }
 
 /**
- * Create a ResizeObserver that notifies the parent of height changes.
+ * Create an observer that notifies the parent of height changes.
+ *
+ * Uses scrollHeight (not contentRect.height) to capture the full content
+ * height including padding and overflow. Also watches for DOM mutations
+ * (async content loads, lazy lists) that may change height without
+ * triggering a ResizeObserver callback.
  */
-export function createResizeNotifier (element: HTMLElement): ResizeObserver {
-  const observer = new ResizeObserver((entries) => {
-    for (const entry of entries) {
-      notifyResize(Math.ceil(entry.contentRect.height))
+export function createResizeNotifier (element: HTMLElement): { disconnect: () => void } {
+  let lastHeight = 0
+
+  function reportHeight (): void {
+    // scrollHeight includes content + padding, capturing overflow.
+    // Also check documentElement.scrollHeight for the full page height
+    // (e.g. popups/panels rendered outside the observed element).
+    const height = Math.ceil(Math.max(
+      element.scrollHeight,
+      element.offsetHeight,
+      document.documentElement.scrollHeight
+    ))
+    if (height !== lastHeight) {
+      lastHeight = height
+      notifyResize(height)
     }
-  })
-  observer.observe(element)
-  return observer
+  }
+
+  const resizeObserver = new ResizeObserver(() => { reportHeight() })
+  resizeObserver.observe(element)
+  resizeObserver.observe(document.documentElement)
+
+  // Catch dynamic DOM changes (lazy-loaded lists, async component mounts)
+  const mutationObserver = new MutationObserver(() => { reportHeight() })
+  mutationObserver.observe(element, { childList: true, subtree: true })
+
+  // Initial measurement after layout settles
+  requestAnimationFrame(() => { reportHeight() })
+
+  return {
+    disconnect (): void {
+      resizeObserver.disconnect()
+      mutationObserver.disconnect()
+    }
+  }
 }
 
 /**

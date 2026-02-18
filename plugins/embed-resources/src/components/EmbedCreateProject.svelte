@@ -13,7 +13,7 @@
   export let config: EmbedConfig
 
   let container: HTMLElement
-  let observer: ResizeObserver | undefined
+  let observer: { disconnect: () => void } | undefined
   let CreateProject: any
   let loading = true
   let done = false

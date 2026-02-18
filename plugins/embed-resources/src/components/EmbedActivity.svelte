@@ -22,7 +22,7 @@
   export let config: EmbedConfig
 
   let container: HTMLElement
-  let observer: ResizeObserver | undefined
+  let observer: { disconnect: () => void } | undefined
   let ActivityComponent: any
   let issueDoc: Issue | undefined
   let loading = true

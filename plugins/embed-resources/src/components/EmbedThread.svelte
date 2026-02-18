@@ -20,7 +20,7 @@
   export let config: EmbedConfig
 
   let container: HTMLElement
-  let observer: ResizeObserver | undefined
+  let observer: { disconnect: () => void } | undefined
   let ThreadView: any
   let loading = true
 

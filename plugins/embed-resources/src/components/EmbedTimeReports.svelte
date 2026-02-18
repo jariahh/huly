@@ -15,7 +15,7 @@
   export let config: EmbedConfig
 
   let container: HTMLElement
-  let observer: ResizeObserver | undefined
+  let observer: { disconnect: () => void } | undefined
   let issueDoc: Issue | undefined
   let TimeSpendReports: any
   let loading = true
