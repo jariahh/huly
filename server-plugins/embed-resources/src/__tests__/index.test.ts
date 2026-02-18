@@ -13,7 +13,7 @@
 // limitations under the License.
 //
 
-import type { MeasureContext, WorkspaceIds, WorkspaceUuid } from '@hcengineering/core'
+import type { AccountUuid, MeasureContext, WorkspaceIds, WorkspaceUuid } from '@hcengineering/core'
 import type { EmbedComponentType } from '@hcengineering/embed'
 
 // Module mocks — must be declared before any imports from the module under test
@@ -278,7 +278,7 @@ describe('generateEmbedUrl', () => {
 // Tests: validateEmbedToken
 
 describe('validateEmbedToken', () => {
-  const VALID_ACCOUNT = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+  const VALID_ACCOUNT = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa' as AccountUuid
   const VALID_WORKSPACE = 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb' as WorkspaceUuid
   const FAKE_TOKEN = 'some.jwt.value'
 
