@@ -61,7 +61,6 @@
 <style lang="scss">
   .embed-thread {
     width: 100%;
-    height: 100%;
     position: relative;
   }
 </style>

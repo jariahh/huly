@@ -78,7 +78,6 @@
 <style lang="scss">
   .embed-comments {
     width: 100%;
-    height: 100%;
     position: relative;
   }
 </style>

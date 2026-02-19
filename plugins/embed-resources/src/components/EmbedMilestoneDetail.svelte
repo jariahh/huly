@@ -72,6 +72,5 @@
 <style lang="scss">
   .embed-milestone-detail {
     width: 100%;
-    height: 100%;
   }
 </style>

@@ -7,7 +7,7 @@
 -->
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { type EmbedConfig } from '@hcengineering/embed'
+  import { type EmbedConfig, type EmbedComponentType } from '@hcengineering/embed'
   import { Popup, PanelInstance, TooltipInstance } from '@hcengineering/ui'
   import { parseEmbedConfig, notifyReady, notifyError } from '../utils'
   import { bootstrapEmbed } from '../embed'
@@ -38,9 +38,20 @@
   import EmbedMyLeads from './EmbedMyLeads.svelte'
   import EmbedApplications from './EmbedApplications.svelte'
 
+  // Fill-mode components fill the iframe viewport and handle their own internal scrolling.
+  // Flow-mode components render at their natural content height with resize events.
+  const FILL_VIEWPORT: Set<EmbedComponentType> = new Set([
+    'kanban', 'issue-list', 'board', 'file-browser',
+    'my-issues', 'milestones', 'components', 'issue-templates',
+    'time-reports', 'document-list', 'department-staff',
+    'todos', 'my-leads', 'applications', 'calendar', 'activity'
+  ])
+
   let config: EmbedConfig | undefined
   let clientReady = false
   let error: string | undefined
+
+  $: fillMode = config !== undefined && FILL_VIEWPORT.has(config.component)
 
   onMount(async () => {
     config = parseEmbedConfig(window.location.search)
@@ -62,7 +73,7 @@
   })
 </script>
 
-<div class="embed-app">
+<div class="embed-app" class:fill-mode={fillMode}>
   {#if error}
     <div class="embed-error">
       <p>{error}</p>
@@ -156,11 +167,19 @@
     background-color: transparent !important;
   }
 
+  // Default: flow mode — content defines height, resize events report it to parent.
   .embed-app {
     width: 100%;
-    height: 100%;
-    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
     background: var(--theme-bg-color, #fff);
+  }
+
+  // Fill mode — lock to viewport, child components handle their own scrolling.
+  .embed-app.fill-mode {
+    height: 100vh;
+    overflow: hidden;
   }
 
   // Shared styles for all embed wrapper components.

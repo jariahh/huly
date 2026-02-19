@@ -58,7 +58,6 @@
 <style lang="scss">
   .embed-create-project {
     width: 100%;
-    height: 100%;
     display: flex;
     flex-direction: column;
 
