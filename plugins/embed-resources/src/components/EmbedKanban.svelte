@@ -65,10 +65,34 @@
 <style lang="scss">
   .embed-kanban {
     width: 100%;
-    height: 100%;
 
     // Hide the viewlet switcher (list/kanban toggle) — mode is forced via setActiveViewletId
     :global(.switcher-container.subtle) { display: none; }
-  }
 
+    // Flatten the kanban's internal scroll hierarchy for embed context.
+    // Kanban is designed as a fixed-height viewport component with per-column
+    // internal scrolling, but in an iframe we need all cards to flow naturally
+    // so the host page can size the iframe to fit the full content.
+
+    // ScrollBox (horizontal column wrapper): undo fixed height + absolute .box
+    :global(.kanban-container) { height: auto !important; }
+    :global(.kanban-container > .scroll) {
+      height: auto !important;
+      overflow: visible !important;
+    }
+    :global(.kanban-container > .scroll > .box) {
+      position: static !important;
+      height: auto !important;
+    }
+
+    // Scroller (per-column card list): undo internal vertical scrolling
+    :global(.scroller-container) { flex-grow: 0 !important; }
+    :global(.scroller-container > .scroll) {
+      height: auto !important;
+      overflow-y: visible !important;
+    }
+    :global(.scroller-container > .scroll > .box) {
+      height: auto !important;
+    }
+  }
 </style>
